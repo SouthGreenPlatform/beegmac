@@ -17,6 +17,9 @@ It focuses on the part of BrAPI that deals with genotyping data and therefore re
 
 *BrAPI base-URL:* http://gigwa.southgreen.fr/gigwa/rest/Rice-MSU7/brapi/v1/
 
+#### Developer documentation
+http://webtools.southgreen.fr/BrAPI/Beegmac/jsdoc/
+
 ---
 
 *Beegmac development was initiated in 2018 by **Pierre Carceller** (https://github.com/Soum-Soum) in the context of his internship at **CIRAD** (https://www.cirad.fr/)*
