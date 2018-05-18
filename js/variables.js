@@ -1,0 +1,20 @@
+const URL_MAPS = "maps";
+const URL_STUDIES = "studies-search";
+const URL_STUDY_GERMPLASM = 'studies/{studyDbId}/germplasm';
+const URL_MARKERS = "markers-search";
+const URL_MARKER_PROFILES = "markerprofiles";
+const URL_ALLELE_MATRIX = "allelematrix-search";
+const URL_ALLELE_MATRIX_STATUS = 'allelematrix-search/status';
+const URL_TOKEN = "token";
+const URL_CALLS = "calls";
+const URL_MAP_DETAILS = 'maps/{mapDbId}';
+const URL_MAP_POSITIONS = 'maps/{mapDbId}/positions';
+const URL_GERMPLASM_DETAILS = 'germplasm/{id}';
+const URL_GERMPLASM_SEARCH = 'germplasm-search'
+const REQUIRED_CALLS = [URL_MAPS, URL_MARKERS, URL_STUDIES, URL_MARKER_PROFILES, URL_ALLELE_MATRIX];
+const ALL_CALLS = [URL_TOKEN, URL_CALLS, URL_MARKERS, URL_STUDIES, URL_MAPS, URL_MAP_DETAILS, URL_MAP_POSITIONS, URL_MARKER_PROFILES, URL_STUDY_GERMPLASM, URL_ALLELE_MATRIX, URL_ALLELE_MATRIX_STATUS, URL_GERMPLASM_DETAILS, URL_GERMPLASM_SEARCH];
+let selectedMap = "", selectedStudy = "" , calls = "", mostPresentType = "";
+let selectedMarkersProfils=[], selectedMarkers=[], hmapsType=undefined , hmapsLinkageGroup = [], response = [], cpyResp = [], arrayOfMarkersType=[], groupTab = [], call2UrlTab = [], firstInformation = [], markerDetailsHmap = [];
+let clientPageSize=1000, startIndex=0, sizeOfResquestedMatrix=0, totalPage =0, currentGroupId=0;
+let isEndPointInUrl=false, isMapIdInUrl=false, auth=false, exportIsAbort = false, exportGermplasmsIsAbort = false, grpTabFromUrlHasChanged = false;
+let urlSaver = new urlWithAuth();

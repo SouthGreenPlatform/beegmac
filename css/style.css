@@ -1,0 +1,97 @@
+body{
+    margin:auto;
+    padding:auto;
+    background-color: #daebf3;
+}
+
+body form * {
+    font-family: Verdana, Arial;
+    font-size:13px;
+}
+
+table{
+    margin: auto;
+    margin-top: 10px;
+}
+
+td, th{
+    font-size:12px;
+    text-align :center;
+}
+
+thead, tfoot{
+    font-weight:bold;
+    color: #ffffff;
+    background-color:#2980b9;
+}
+
+h2{
+    margin-bottom:20px; 
+}
+
+.form-control {
+	font-size:inherit;
+}
+
+select{
+    margin-right: 30px;
+    margin-bottom: 20px;
+    min-width: 150px;
+}
+
+.alignTop{
+     vertical-align:top;
+}
+
+.Evolution{
+    text-align: center;
+    display: inline;
+}
+
+#loadingImage{
+    margin-left: 25px
+}
+
+#mainForm, secondForm{
+/*     margin-bottom:40px; */
+	margin-top:10px;
+}
+
+#nbResult{
+    display: inline;
+    margin: 10px;
+}
+
+#firstPartOfForm{
+    padding-bottom:15px;
+    margin-top: 60px;
+}
+
+.roundedSection{
+    border-radius: 20px;
+    margin: auto;
+    margin-bottom: 10px;
+    padding-left: 20px;
+    padding-right:20px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+.space{
+    margin-bottom: 10px;
+}
+
+.modal-lg {
+    max-width: 700px;
+}
+
+#title {
+	font-family:"Trebuchet MS", Tahoma, sans-serif;
+	font-weight:bold;
+	font-size: 30px;
+	text-shadow: 1px 1px #aaaaaa;
+}
+
+#advancedMode, #groupManager {
+	margin-top:5px;
+}

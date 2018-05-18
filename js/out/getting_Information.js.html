@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: getting_Information.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: getting_Information.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Get a Token.
+ * @async
+ * @function
+ * @param {string} stringUserName - The User Name.
+ * @param {string} stringPassword - The Password.
+ * @param {string} urlEndPoint - The brapi endpoint.
+ */
+async function getToken(stringUserName, stringPassword, urlEndPoint){
+	let myURL = urlEndPoint + "/" + URL_TOKEN, tokenString="";
+	let body = {username : stringUserName, password : stringPassword};
+	body = JSON.stringify(body);
+	try {
+    	let resp = await fetch(myURL,{method: "POST",body: body, headers: {'Content-Type': 'application/json'}});
+    	if (resp.status>199 &amp;&amp; resp.status&lt;300){
+		tokenString = await resp.json();
+		return tokenString.access_token;
+		}else{return tokenString;}
+	}
+	catch(err) {
+	    handleErrors('Impossible to take one tokenUrl');
+	}
+}
+
+/**
+ * Check the map coming from the url.
+ * @async
+ * @function
+ * @param {string} brapiEndPoint - The brapi endpoint.
+ * @param {string} mapDbId - The Password.
+ */
+async function urlMapIdIsOk(brapiEndPoint, mapDbId){
+    try {
+        await fetch(brapiEndPoint + "/" + URL_MAPS + "/" + mapDbId);
+    } catch (err) {
+        handleErrors("Bad map id in Url");
+        return false;
+    }
+	return true;
+}
+
+/**
+ * Check the brapiEndPoint coming from the url.
+ * @async
+ * @function
+ * @param {string} brapiEndPoint - The brapi endpoint.
+ */
+async function urlBrapiEndPointIsOk(brapiEndPoint){
+	try{
+        let reponse = await fetch(brapiEndPoint + "/" + URL_CALLS);
+        if(!reponse.ok){
+            handleErrors("Bad barpi end point in Url");
+            return false;
+		}
+    }catch(err){
+		handleErrors("Bad barpi end point in Url");
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Get the liste of call implemented by the brapi endpoint you passed
+ * @async
+ * @function
+ * @param {urlWithAuth} urlWithToken - The Url
+ */
+async function getCalls(urlWithToken){
+        let myURL1 = urlWithToken.url + "/" + URL_CALLS;
+        let myHeaders1 = new Headers();
+        let Authorization = urlWithToken.token==='' ? '' : "Bearer " + urlWithToken.tokenUrl1;
+        myHeaders1 = {Authorization};
+		try{
+			let resp1 = await fetch(myURL1, myHeaders1);
+			resp1 = await resp1.json();
+			return resp1.result.data;
+		}catch(err){
+			handleErrors('Bad Url');
+		}
+
+}
+
+/**
+ * Return the list of maps for a given url
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function readMaps(argumentsArray){
+	let myURL = argumentsArray.urlEndPoint + "/" + URL_MAPS;
+	let foundMaps = [];
+	let myInit = returnInit(argumentsArray.token);
+    try {
+    	let resp = await fetch(myURL, myInit);
+    	resp = await resp.json();
+		resp.result.data.forEach(function(element){foundMaps.push(element);});
+		return foundMaps;
+	}
+	catch(err) {
+	     handleErrors('impossible to load call maps');
+	}  
+}
+
+/**
+ * Return the list of studies for a given url
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function readStudyList(argumentsArray){
+	let myURL = argumentsArray.urlEndPoint + "/" + URL_STUDIES + "?studyType=genotype";
+	let foundStudies = new Array();
+	let myInit = returnInit(argumentsArray.token);
+    try {
+    	let resp = await fetch(myURL, myInit);
+    	resp = await resp.json();
+		resp.result.data.forEach(function(element){foundStudies.push(element);});
+		return foundStudies;
+	}
+	catch(err) {
+	     handleErrors('impossible to load call studies');
+	}    
+}
+
+/**
+ * Return the list of Marker Profile for a given url
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function getmarkerProfileDbId(argumentsArray){
+    let myURL = argumentsArray.askedPage===undefined ? argumentsArray.urlEndPoint + "/" + URL_MARKER_PROFILES : argumentsArray.urlEndPoint + "/" + URL_MARKER_PROFILES +"?page="+argumentsArray.askedPage ;
+	let myInit = returnInit(argumentsArray.token);
+	try {
+		let resp = await fetch(myURL, myInit);
+    	resp = await resp.json();
+    	console.log(resp);
+		return resp;
+	}
+	catch(err) {
+	     handleErrors('impossible to load call Maker Profile');
+	} 
+}
+
+/**
+ * Return the list of Marker for a given url
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function getMarkers(argumentsArray){
+    let myURL = argumentsArray.askedPage===undefined ? argumentsArray.urlEndPoint + "/" + URL_MARKERS : argumentsArray.urlEndPoint + "/" + URL_MARKERS +"?page="+argumentsArray.askedPage ;
+    if(argumentsArray.askedType !== undefined &amp;&amp; argumentsArray.askedType !== null){
+		myURL += '&amp;type=' + argumentsArray.askedType;
+	}
+	if(argumentsArray.pageSize !== undefined &amp;&amp; argumentsArray.pageSize !== null){
+        myURL += '&amp;pageSize=' + argumentsArray.pageSize;
+    }
+
+    let myInit = returnInit(argumentsArray.token);
+	try {
+		console.log(myURL);
+		let resp = await fetch(myURL, myInit);
+    	resp = await resp.json();
+		return resp;	
+	}
+	catch(err) {
+	     handleErrors('impossible to load call Marker');
+	} 
+}
+
+/**
+ * Return the details for a given map
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function getMapDetails(argumentsArray){
+	let myURL=argumentsArray.urlEndPoint+"/"+URL_MAPS+"/"+argumentsArray.selectedMap;
+	let myInit = returnInit(argumentsArray.token);
+	try {
+		let resp = await fetch(myURL, myInit);
+		resp = await resp.json();
+		return resp;
+	}
+	catch(err) {
+	     handleErrors('unable to get map details');
+	} 
+}
+
+/**
+ * Return the list of Marker Position for a given url
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function getMarkersPosition(argumentsArray){
+    let myURL = argumentsArray.askedPage===undefined ? argumentsArray.urlEndPoint+"/"+URL_MAPS+"/"+argumentsArray.selectedMap+"/positions" : argumentsArray.urlEndPoint+"/"+URL_MAPS+"/"+argumentsArray.selectedMap+"/positions?page="+argumentsArray.askedPage;
+    if(argumentsArray.selectedLKG!==undefined){myURL = myURL + '&amp;linkageGroupId=' + argumentsArray.selectedLKG;}
+    let myInit = returnInit(argumentsArray.token);
+	console.log(myURL);
+	try {
+		let resp = await fetch(myURL, myInit);
+		resp = await resp.json();
+		return resp;
+	}
+	catch(err) {
+	     handleErrors('impossible to load call map/id/position');
+	}
+}
+
+/**
+ * Return the data matrix for a given marker list/ marker profile list
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function getMatrix(argumentsArray){
+    try {
+		let myURL = argumentsArray.askedPage===undefined ? argumentsArray.urlEndPoint + "/" +URL_ALLELE_MATRIX : argumentsArray.urlEndPoint + "/" +URL_ALLELE_MATRIX+ "?pageSize="+argumentsArray.clientPageSize+"&amp;page="+argumentsArray.askedPage;
+		let matrixString = "";
+		argumentsArray.sendedMarkersProlis = removeAll(argumentsArray.sendedMarkersProlis, undefined);
+		for(i=0;i&lt;argumentsArray.sendedMarkersProlis.length; i++){
+			matrixString+= 'markerprofileDbId=' + argumentsArray.sendedMarkersProlis[i] + '&amp;';
+		}
+		argumentsArray.sendedMarkers = removeAll(argumentsArray.sendedMarkers, undefined);
+		for(i=0;i&lt;argumentsArray.sendedMarkers.length; i++){
+			matrixString+= (i===0 ? '' : '&amp;') + 'markerDbId=' +argumentsArray.sendedMarkers[i];
+		}
+		matrixString+='&amp;unknownString=';
+		if(argumentsArray.isAnExport === true){matrixString += "&amp;format=tsv";}
+		let myHeaders = new Headers();
+		if(argumentsArray.token!=='""'){
+			myHeaders = {'Authorization': 'Bearer '+argumentsArray.token,
+				'Content-Type':'application/x-www-form-urlencoded'
+			};
+		}else {
+			myHeaders = {
+				'Content-Type':'application/x-www-form-urlencoded'
+			};
+		}
+/*		// console.log(matrixString);*/
+    	let resp = await fetch(myURL,{method: "POST",body: matrixString, headers: myHeaders});
+		resp = await resp.json();
+		return resp;
+	}
+	catch(err) {
+	     handleErrors('impossible to load call matix');
+	}
+}
+
+/**
+ * Function responsible for exporting the matrix
+ * @async
+ * @exports allelematrix
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function getExportStatus(argumentsArray){
+    let l = Ladda.create( document.querySelector( '#Export'));
+    try {
+        l.start();
+		let myURL = argumentsArray.urlEndPoint + "/" + URL_ALLELE_MATRIX + "/status/" + argumentsArray.asynchid;
+		let myInit = returnInit(argumentsArray.token);
+		let resp = await fetch(myURL, myInit);
+		resp = await resp.json();
+		console.log(resp);
+		console.log(argumentsArray.asynchid);
+		console.log(myURL);
+		while(resp.metadata.status[0].message==="INPROCESS" &amp;&amp; exportIsAbort===false){
+			console.log(myURL);
+			console.log(resp.metadata.status[0].message);
+			resp = await fetch(myURL, myInit);
+			resp = await resp.json();
+			console.log(resp.metadata.pagination.currentPage);
+			l.setProgress(resp.metadata.pagination.currentPage/100);
+			console.log(resp.metadata.pagination.currentPage/100);
+			await sleep(1500);
+		}
+		if(exportIsAbort===false &amp;&amp; resp.metadata.status[0].message!=="FAILED"){
+            console.log(resp);
+            l.setProgress(1);
+            window.location = resp.metadata.datafiles[0];
+		}
+	}
+	catch(err) {
+		handleErrors('unable to export data');
+	}
+    $('#AbortExport').hide();
+    l.stop();
+}
+
+/**
+ * Return the details for a given Germplasms
+ * @async
+ * @function
+ * @param {array} argumentsArray - Array containing the parameters required by the function
+ */
+async function getGermplasmsDetails(argumentsArray){
+    try{
+        let myURL = argumentsArray.urlEndPoint + "/germplasm-search";//?germplasmDbId=";
+        let temp = {germplasmDbIds : argumentsArray.germplasmIdArray};
+        let myHeaders = new Headers();
+        temp = JSON.stringify(temp);
+        if(argumentsArray.token!=='""'){
+            myHeaders = {'Authorization': 'Bearer '+argumentsArray.token,
+                'Content-Type': 'application/json'
+            };
+        }else {
+            myHeaders = {
+                'Content-Type': 'application/json'
+            };
+        }
+        let resp = await fetch(myURL,{method: "POST",body: temp, headers: myHeaders});
+        return await resp.json();
+	}catch (err){
+		handleErrors('unable to export data');
+	}
+
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="PaginationManager.html">PaginationManager</a></li><li><a href="urlWithAuth.html">urlWithAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#$_GET">$_GET</a></li><li><a href="global.html#abortExport">abortExport</a></li><li><a href="global.html#abortGermplasmsExport">abortGermplasmsExport</a></li><li><a href="global.html#addGrp">addGrp</a></li><li><a href="global.html#addGrp2">addGrp2</a></li><li><a href="global.html#addUrl">addUrl</a></li><li><a href="global.html#addUrl2">addUrl2</a></li><li><a href="global.html#allelematrix">allelematrix</a></li><li><a href="global.html#animatForm">animatForm</a></li><li><a href="global.html#array_big_intersect">array_big_intersect</a></li><li><a href="global.html#bindCall2Url">bindCall2Url</a></li><li><a href="global.html#buildTsvString">buildTsvString</a></li><li><a href="global.html#callsAreInArray">callsAreInArray</a></li><li><a href="global.html#cleanTab">cleanTab</a></li><li><a href="global.html#enmptResultTab">enmptResultTab</a></li><li><a href="global.html#ExportDetailsGermplasms">ExportDetailsGermplasms</a></li><li><a href="global.html#exportMatrix">exportMatrix</a></li><li><a href="global.html#fill_result_table">fill_result_table</a></li><li><a href="global.html#fillWidget">fillWidget</a></li><li><a href="global.html#Germplasms">Germplasms</a></li><li><a href="global.html#getCalls">getCalls</a></li><li><a href="global.html#getFieldFormJson">getFieldFormJson</a></li><li><a href="global.html#getGermplasmsDetails">getGermplasmsDetails</a></li><li><a href="global.html#getMapDetails">getMapDetails</a></li><li><a href="global.html#getmarkerProfileDbId">getmarkerProfileDbId</a></li><li><a href="global.html#getMarkerProfileHmap">getMarkerProfileHmap</a></li><li><a href="global.html#getMarkers">getMarkers</a></li><li><a href="global.html#getMarkersPosition">getMarkersPosition</a></li><li><a href="global.html#getMatrix">getMatrix</a></li><li><a href="global.html#getToken">getToken</a></li><li><a href="global.html#getTypeList">getTypeList</a></li><li><a href="global.html#handleErrors">handleErrors</a></li><li><a href="global.html#insetMatrixInResultTable">insetMatrixInResultTable</a></li><li><a href="global.html#isInArray">isInArray</a></li><li><a href="global.html#nextPage">nextPage</a></li><li><a href="global.html#prevPage">prevPage</a></li><li><a href="global.html#readMaps">readMaps</a></li><li><a href="global.html#readStudyList">readStudyList</a></li><li><a href="global.html#removeAll">removeAll</a></li><li><a href="global.html#requCallareImplement">requCallareImplement</a></li><li><a href="global.html#returnInit">returnInit</a></li><li><a href="global.html#reversHmap">reversHmap</a></li><li><a href="global.html#rmThisGrp">rmThisGrp</a></li><li><a href="global.html#rmUrl">rmUrl</a></li><li><a href="global.html#selectStudies">selectStudies</a></li><li><a href="global.html#setArgumentArray">setArgumentArray</a></li><li><a href="global.html#setCustomIndex">setCustomIndex</a></li><li><a href="global.html#setCustomPageSize">setCustomPageSize</a></li><li><a href="global.html#setDisabled">setDisabled</a></li><li><a href="global.html#setEmptyMarkerSelect">setEmptyMarkerSelect</a></li><li><a href="global.html#setEmptyTheFields">setEmptyTheFields</a></li><li><a href="global.html#setHmapLinkageGroup">setHmapLinkageGroup</a></li><li><a href="global.html#setHmapType">setHmapType</a></li><li><a href="global.html#setup_select_tag">setup_select_tag</a></li><li><a href="global.html#setUpGermplasms">setUpGermplasms</a></li><li><a href="global.html#setUpLinkageGroupAndMarkersType">setUpLinkageGroupAndMarkersType</a></li><li><a href="global.html#setUpMarkerProfils">setUpMarkerProfils</a></li><li><a href="global.html#setupMarkersId">setupMarkersId</a></li><li><a href="global.html#sleep">sleep</a></li><li><a href="global.html#updateSelection">updateSelection</a></li><li><a href="global.html#urlBrapiEndPointIsOk">urlBrapiEndPointIsOk</a></li><li><a href="global.html#urlMapIdIsOk">urlMapIdIsOk</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jan 25 2018 10:51:47 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

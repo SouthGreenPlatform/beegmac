@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Beegmac, a Brapi-Enabled Embeddable Genomic-Marker Allele Client</title>
+		<link rel="stylesheet" type="text/css" href="css/ladda-themeless.min.css">
+		<link rel="stylesheet" type="text/css" href="css/animate.css">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+	</head>
+	<body>
+		<div id="loadingModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div id="loadingModalContainer" style="padding: 5px;background-color: #daebf3; border-radius: 10px;" class="container-fluid modal-content">
+					<div style="font-size: 13px; font-weight: bold; width: auto; margin-top: 5px;" class='mx-auto badge badge-pill badge-light' id="mainBadge">loool</div>
+					<div style="margin: 5px 10px 10px 10px;" class="progress">
+						<div class="progress-bar bg-dark" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row">
+				<div id="title" class="col-md-5">
+					<div style="z-index:100; position:absolute; margin-top:20px; font-size:11px; margin-left:170px;">for <a href="https://www.brapi.org/" target="_blank" title="Click to learn about BrAPI"><img src="resources/brapi-logo.svg" style="margin-bottom:5px; height:13px;" /></a> v1.1</div>
+					Beegmac
+					<div style="margin-top:-5px; font-size:11px; font-weight:normal; font-family:Arial;">Brapi-Enabled Embeddable Genomic-Marker Allele Client</div>
+				</div>
+				<div class="col-md-2">
+					<div title="Advanced mode allows working with multiple BrAPI data-sources" id="advancedMode" class="badge badge-info"><input type="checkbox" class="" onchange="isInAdvancedMode($(this).is(':checked'))"> Advanced mode</div>
+                    <span style="position: absolute; z-index: 10; margin-left:-100px; min-width:400px;" class="alert alert-danger" id="ErrorMessage"></span>
+                </div>
+				<form class="col-md-5">
+					<div id="standardForm" class="container mx-auto">
+						<div id="loginForm">
+							<div class=" row">
+								<div class="input-group">
+									<input type="text" value="" name="UserId" class="form-control" id="UserId" placeholder="User Name">
+									<input type="password" value="" name="Password" class="form-control" id="Password" placeholder="Password">
+									<button class="col-4 btn btn-secondary btn-sm" id="Submit1" type="button" onclick="if(groupTab.length>0 && $('#urltoget').val()!==''){groupTab=[];}setEmptyTheFields();login();">Submit</button>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-group">
+								<input value="" type="text" name="URL" class="form-control" placeholder="Ex : http://_____/brapi/v1" id="urltoget" onchange="setEmptyTheFields();">
+							</div>
+						</div>
+						<div class="row">
+							<div id="groupModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-lg">
+									<div style="border-radius: 20px;" class="modal-content">
+										<div class="container-fluid" style="background-color:#daebf3;">
+											<div class="row roundedSection" style="background-color:#daebf3;">
+												<div style="width:100%; font-weight:bold; text-align:center; margin-bottom:10px;">A group of URLs can be jointly used if they hold complementary data but implement different calls</div> 
+												<button type="button" class="col-6 btn btn-light" style="margin-bottom: 10px" id="addGrpId" onclick="addGrp(this)"> Add a Group</button>
+												<button type="button" class="col-6 btn btn-dark" style="margin-bottom: 10px"  onclick="generateGroupTab(this)"> Connect</button>
+												<div class="row col-12 roundedSection animated pulse" style="background-color: #2980b9;">
+													<button type="button" class="space col-5 btn btn-light" onclick="addUrl(this);">Add a URL</button>
+													<button type="button" class="space col-5 btn btn-dark" onclick="rmUrl(this);">Remove last URL</button>
+													<button type="button" class="space col-2 btn btn-outline-danger close" aria-label="Close" onclick="rmThisGrp(this);">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<button type="button" id="groupManager" class="col-4 btn btn-sm btn-primary" data-toggle="modal" data-target="#groupModal">Configure</button>
+						</div>
+					</div>
+				</form>	
+			</div>
+		</div>
+		<div id="toAnimate" class="container">
+			<form id="mainForm">
+				<div class="row">
+					<div class="col-md-4">
+						<div id="mapForm">
+							<label for="selectionMap" id="labelSelectionMap">Map : </label>
+                            <br>
+							<select name="selectionMap" id="selectionMap" class="custom-select" onchange="selectStudies(); updateGigwaLinkIfApplicable();"></select>
+						</div>
+						<div id="gigwaLink" style='display:none; margin-top:-20px; margin-bottom:20px; padding:3px; width:165px; font-style:italic; background-color:white;'></div>
+						<label for="selectionStudies">Study : </label>
+                        <br>
+						<select name="selectionStudies" id="selectionStudies" class="custom-select"onchange="launch_selection()"></select>
+					</div>
+					<div class="col-md-4">
+						<label for="Germplasms" class="alignTop">Germplasms : </label>
+						<label class="badge badge-success"id="labelGermplasms" class="alignTop"></label><br>
+						<select name="Germplasms" id="Germplasms" size="10" multiple="" onchange="updateSelection('labelGermplasms','Germplasms');setUpMarkerProfils();"></select>
+					</div>
+					<div class="col-md-4">
+						<label for="MarkersProfils" id="labelMarkersProfils" class="alignTop">Samples : </label>
+						<label class="badge badge-success" id="markerProfileLabel" class="alignTop"></label><br>
+						<select name="MarkersProfils" id="MarkersProfils" size="10" onchange="updateSelection('markerProfileLabel','MarkersProfils');" multiple="" ></select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="badge badge-danger text-center" style="position: absolute; z-index: 5; text-align: center; opacity: 0.7; height: 100%;" id="topTypeDiv">
+							<p class="mx-auto my-auto" style="padding-top: 100px;">Unable to determine list of <br> distinct marker types</p>
+						</div>
+						<label for="typeMarker" class="alignTop">Types : </label>
+						<label  class="badge badge-success" id="typeLabel" class="alignTop"></label><br>
+						<select  name="typeMarker" id="typeMarker" size="10" multiple="" onchange="selectionMarkers();updateSelection('typeLabel','typeMarker');"></select>
+					</div>
+					<div class="col-md-4">
+						<label for="chromosome" class="alignTop">Sequences : </label>
+						<label class="badge badge-success" id="chromosomeLabel" class="alignTop"></label><br>
+						<select name="chromosome" id="chromosome" size="10" multiple="" onchange="setEmptyMarkerSelect();selectionMarkers();updateSelection('chromosomeLabel','chromosome');"></select>
+					</div>
+					<div class="col-md-4">
+						<div class="badge badge-danger text-center" style="position: absolute; z-index: 5; text-align: center; opacity: 0.7; height: 100%;" id="topMarkerDiv">
+							<p class="mx-auto my-auto" style="padding-top: 100px;">Too many markers for display <br> and selection</p>
+						</div>
+						<label for="Markers" class="alignTop">Markers : </label>
+						<span class="badge badge-success" id="numberOfMarkers" class="alignTop"></span>
+						<label class="badge badge-success" id="markersLabel" class="alignTop"></label><br>
+						<select name="Markers" id="Markers" size="10" onchange="updateSelection('markersLabel','Markers');" multiple=""></select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12" style="text-align: center;">
+						<input disabled type="button" id="Search" value="Search" class="btn btn-sm btn-primary" onclick="getRequestParameter();">
+						<button disabled type="button" id="Export" class="btn btn-sm btn-primary ladda-button" data-style="expand-right" onclick="exportMatrix();">Export genotypes</button>
+						<button disabled type="button" id="ExportGermplasmsDetails" class="btn btn-sm btn-primary ladda-button" data-style="expand-right" onclick="ExportDetailsGermplasms();"> Export Germplasms Details</button>
+						<button disabled type="button" id="ExportMarkerDetails" class="btn btn-sm btn-primary ladda-button" data-style="expand-right" onclick="exportMarkerDetails();"> Export Marker Details</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12" style="margin-top:2px;  text-align: center;">
+						<button type="button" id="AbortExport" class="btn btn-danger btn-sm" onclick="abortExport();">Abort Export genotypes </button>
+						<button type="button" id="AbortExportGermplasmsDetails" class="btn btn-danger btn-sm" onclick="abortGermplasmsExport();">Abort Export Germplasms Details</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<form id="secondForm" style="text-align: center;">
+			<span id="nbResult"></span>
+			<input type="button" name="prev" value="<" class="btn btn-primary btn-sm" onclick="prevPage();">
+			<label class="badge badge-success" for="customIndex">Page n°</label>
+			<input type="text" id="customIndex" size="5" onchange="setCustomIndex();">
+			<span id="pageNumber" ></span>
+			<input type="button" name="next" value=">" class="btn btn-primary btn-sm" onclick="nextPage()">
+			<label class="badge badge-success" for="customPageSize">Genotypes per page : </label>
+			<input type="text" id="customPageSize" size="5" value="1000" onchange="setCustomPageSize();launchMatrixRequest(startIndex);">
+			<label class="badge badge-success" for="missingData">Show missing data</label>
+			<input id="missingData" type="checkbox" onchange="getRequestParameter();">
+			<br>
+		</form>
+		<div class="container">
+			<table id="resulttable" class="table table-bordered table-light">
+				<thead>
+					<tr>
+						<th scope="col">Marker</th>
+						<th scope="col">Position</th>
+						<th scope="col">Germplasm</th>
+						<th scope="col">Sample</th>
+						<th scope="col">Genotype</th>
+					</tr>
+				</thead> 
+				<tbody>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th scope="col">Markers</th>
+						<th scope="col">Position</th>
+						<th scope="col">Germplasm</th>
+						<th scope="col">Sample</th>
+						<th scope="col">Genotype</th>
+					</tr>   	
+				</tfoot>
+			</table>
+		</div>
+
+		<script src="js/extern_library/jquery.js"></script>
+		<script src="js/extern_library/spin.min.js"></script>
+		<script src="js/extern_library/ladda.min.js"></script>
+		<script src="js/extern_library/bootstrap.bundle.js"></script>
+		<script src="js/extern_library/bootstrap.js"></script>
+		<script src="js/extern_library/fontawesome-all.js"></script>
+		<script src="js/classes/pager.js"></script>
+		<script src="js/classes/urlWithAuth.js"></script>
+		<script src="js/variables.js"></script>
+		<script src="js/utilities.js"></script>
+		<script src="js/calls.js"></script>
+		<script src="js/hmap.js"></script>
+		<script src="js/pagination.js"></script>
+		<script src="js/getting_Information.js"></script>
+		<script src="js/view/view.js"></script>
+		<script src="js/view/tabView.js"></script>
+		<script src="js/view/grpWidgetView.js"></script>
+		<script src="js/export.js"></script>
+		<script src="js/main.js"></script>
+	    <script type="text/javascript">	$('.badgeToHide').hide(); init();	</script>
+	</body>
+</html>
