@@ -12,8 +12,10 @@ It focuses on the part of BrAPI that deals with genotyping data and therefore re
 -	/markers-search
 -	/studies-search
 
-You may try it using the following base-URL:
-http://gigwa.southgreen.fr/gigwa/rest/Rice-MSU7/brapi/v1/
+#### Try Beegmag online
+*Demo URL:* http://webtools.southgreen.fr/BrAPI/Beegmac/
+
+*BrAPI base-URL:* http://gigwa.southgreen.fr/gigwa/rest/Rice-MSU7/brapi/v1/
 
 ---
 
