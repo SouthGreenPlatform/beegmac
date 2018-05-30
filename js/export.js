@@ -8,6 +8,9 @@ async function exportMatrix(){
     exportIsAbort=false;
     let sentMarkerProfiles = $("#MarkersProfils option:selected").map(function(){return $(this).val().split(",");}).get();
     sentMarkerProfiles = removeAll(sentMarkerProfiles, "");
+    if($('#Markers').html()!==""){
+        selectedMarkers = $('#Markers').find('option:selected').map(function(){return $(this).val();}).get();
+    }
     let sentMarkers = selectedMarkers;
     //console.log(sentMarkers);
     let isAnExport= true, askedPage = undefined;
