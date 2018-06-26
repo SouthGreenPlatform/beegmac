@@ -13,12 +13,12 @@ It focuses on the part of BrAPI that deals with genotyping data and therefore re
 -	/studies-search
 
 #### Try Beegmag online
-*Demo URL:* http://webtools.southgreen.fr/BrAPI/Beegmac/
+*Demo URL:* http://webtools.southgreen.fr/BrAPI/Beegmac/ or http://webtools-sg.cirad.fr/BrAPI/Beegmac/
 
 *BrAPI base-URL:* http://gigwa.southgreen.fr/gigwa/rest/Rice-MSU7/brapi/v1/
 
 #### Developer documentation
-http://webtools.southgreen.fr/BrAPI/Beegmac/jsdoc/
+http://webtools.southgreen.fr/BrAPI/Beegmac/jsdoc/ or http://webtools-sg.cirad.fr/BrAPI/Beegmac/jsdoc/
 
 ---
 
