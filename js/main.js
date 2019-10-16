@@ -1,10 +1,11 @@
-
-
 async function init(){
 	await setVisibleField();
 	if (window !== top){
 		$('#title').hide();
 	}
+	let bgcolor = $_GET("bgcolor");
+	if (bgcolor != null)
+		$("body").css('background-color', "#" + bgcolor);
 }
 
 async function setVisibleField() {
@@ -363,4 +364,3 @@ function launchMatrixRequest(index){
         launchMatrixRequest(startIndex);
 	}
 }
-
