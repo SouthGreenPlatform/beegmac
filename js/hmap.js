@@ -73,11 +73,16 @@ function setHmapLinkageGroup(arrayOfLinkageGroup, arrayMarkers){
     for(let i =0; i<arrayOfLinkageGroup.length; i++){
         hmapsLinkageGroup[arrayOfLinkageGroup[i]]=[];
     }
+    var unpositionedMarkers = [];
     for (let i = 0; i < arrayMarkers.length; i++) {
         for (let j = 0; j < arrayMarkers[i].length; j++) {
-            hmapsLinkageGroup[arrayMarkers[i][j].linkageGroupName].push(arrayMarkers[i][j].markerDbId);
+            var markerLG = arrayMarkers[i][j].linkageGroupName;
+            var linkageGroupMarkers = markerLG == null ? unpositionedMarkers : hmapsLinkageGroup[markerLG];
+            linkageGroupMarkers.push(arrayMarkers[i][j].markerDbId);
         }
     }
+    if (unpositionedMarkers.length > 0)
+        hmapsLinkageGroup["(unpositioned)"] = unpositionedMarkers;
 }
 
 /**
